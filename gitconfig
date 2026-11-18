@@ -1,0 +1,60 @@
+[alias]
+  a = add
+  aa = add --all
+  br = branch
+  co = checkout
+  cb = checkout -b
+  cm = commit -m
+  cl = clean -i
+  # difftastic only for these; plain `git diff` stays a normal patch
+  df = -c diff.external=difft diff
+  dl = -c diff.external=difft log -p --ext-diff
+  ds = -c diff.external=difft show --ext-diff
+  dw = diff --color-words --ignore-space-at-eol -b -w --ignore-blank-lines
+  lg = log --graph --oneline
+  st = status
+  # st = status -u no
+  # stu = status -u all
+  ps = push
+  pl = pull
+  pp = "!f() { \
+            git log --oneline --color=always | \
+            fzf --ansi --no-sort --reverse --preview 'git show --color=always {1}' \
+                --preview-window=right:60% | \
+            awk '{print $1}'; \
+        }; f"
+  w = worktree
+[init]
+  defaultBranch = main
+[branch "main"]
+  rebase = true
+[branch "staging"]
+  rebase = true
+[core]
+  editor = vim
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+
+[diff]
+    # Set difftastic as the default difftool, so we don't need to specify
+    # `-t difftastic` every time.
+    tool = difftastic
+    algorithm = histogram
+
+[difftool "difftastic"]
+    # See `man git-difftool` for a description of MERGED, LOCAL and REMOTE.
+    # cmd = difft "$MERGED" "$LOCAL" "abcdef1" "100644" "$REMOTE" "abcdef2" "100644"
+    # \" so git keeps the quotes (a bare " is git config quoting): paths with spaces work
+    cmd = difft \"$LOCAL\" \"$REMOTE\"
+    prompt = false
+[pager]
+    # Use a pager if the difftool output is larger than one screenful,
+    # consistent with the behaviour of `git diff`.
+    difftool = true
+
+# name and email are kept out of the repo, in ~/.gitconfig.local (written by install.sh)
+[include]
+  path = ~/.gitconfig.local
